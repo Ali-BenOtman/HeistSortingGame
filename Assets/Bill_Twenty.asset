@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61fd822fc7cd97541a9473ad71f35451, type: 3}
+  m_Name: Bill_Twenty
+  m_EditorClassIdentifier: Assembly-CSharp::BillData
+  value: 20
+  correctDirection: 0
+  billColor: {r: 0.9607844, g: 0.9607844, b: 0.9607844, a: 1}
+  billSprite: {fileID: 1833811831872338805, guid: 898428f23743b8e40a61e4c3adf6f9cd, type: 3}

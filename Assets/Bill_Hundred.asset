@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61fd822fc7cd97541a9473ad71f35451, type: 3}
+  m_Name: Bill_Hundred
+  m_EditorClassIdentifier: Assembly-CSharp::BillData
+  value: 100
+  correctDirection: 1
+  billColor: {r: 0.9607844, g: 0.9607844, b: 0.9607844, a: 1}
+  billSprite: {fileID: 4556815572507648915, guid: 47a06e1244accad47bd3ad1ab2ebd94f, type: 3}

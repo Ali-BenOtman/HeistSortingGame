@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bce88dada9b3d1f4797f8e69a0ff5ac8, type: 3}
+  m_Name: PowerUp_AutoSort
+  m_EditorClassIdentifier: Assembly-CSharp::PowerUpData
+  powerUpType: 2
+  powerUpSprite: {fileID: -9170845217990263920, guid: 3a0ce47ef4197664e97427ed90a80313, type: 3}
+  powerUpColor: {r: 1, g: 1, b: 1, a: 1}
+  duration: 5
