@@ -16,3 +16,4 @@ MonoBehaviour:
   correctDirection: 3
   billColor: {r: 0.9607844, g: 0.9607844, b: 0.9607844, a: 1}
   billSprite: {fileID: 2202545038762936701, guid: 4055f0f8205da9f45b9f9ff895edc92a, type: 3}
+  scorePoints: 2

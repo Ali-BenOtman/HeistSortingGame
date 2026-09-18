@@ -13,4 +13,11 @@ public class BillData : ScriptableObject
     public SwipeDirection correctDirection;
     public Color billColor;
     public Sprite billSprite;
+
+    [Header("Scoring")]
+    [Tooltip("Points awarded for sorting this bill correctly - deliberately " +
+             "decoupled from the displayed dollar value above. Bill art still " +
+             "shows real denominations ($1-$100), but actual score stays " +
+             "compressed and skill-driven rather than swung by which bill spawns.")]
+    public int scorePoints = 1;
 }

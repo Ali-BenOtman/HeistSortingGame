@@ -136,7 +136,9 @@ public class BillSpawner : MonoBehaviour
 
         if (currentBillData != null)
         {
-            scoreSystem.OnCorrectSort((int)currentBillData.value);
+            // CHANGED: was (int)currentBillData.value (face value) - now uses the
+            // separate scorePoints field, matching SortingManager's manual-sort path.
+            scoreSystem.OnCorrectSort(currentBillData.scorePoints);
             timerSystem.AddTime();
             SpawnNextBill();
         }

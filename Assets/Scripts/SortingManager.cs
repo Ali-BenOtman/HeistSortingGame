@@ -43,7 +43,10 @@ public class SortingManager : MonoBehaviour
         if (direction == currentBill.correctDirection)
         {
             Debug.Log("Correct sort! Bill: $" + (int)currentBill.value);
-            scoreSystem.OnCorrectSort((int)currentBill.value);
+            // CHANGED: was (int)currentBill.value (face value) - now uses the
+            // separate scorePoints field, so score no longer swings with which
+            // bill happens to spawn.
+            scoreSystem.OnCorrectSort(currentBill.scorePoints);
             onCorrectSort.Invoke();
         }
         else
