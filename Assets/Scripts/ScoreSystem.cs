@@ -1,6 +1,7 @@
 // ScoreSystem.cs
 // Tracks score and multiplier based on correct/wrong sorts
 // Advanced: wrong sort drops multiplier one level, speed bonus, multiplier decay
+// NEW: persists a high score via PlayerPrefs, checked/saved when a run ends
 
 using UnityEngine;
 using UnityEngine.Events;
@@ -25,8 +26,17 @@ public class ScoreSystem : MonoBehaviour
     private float decayTimer = 0f;
     private bool isPlaying = false;
 
+    // NEW - persisted high score
+    private const string HighScoreKey = "HighScore";
+    private int highScore = 0;
+
     public UnityEvent<int> onScoreChanged;
     public UnityEvent<int> onMultiplierChanged;
+
+    void Awake()
+    {
+        highScore = PlayerPrefs.GetInt(HighScoreKey, 0);
+    }
 
     void Update()
     {
@@ -116,6 +126,14 @@ public class ScoreSystem : MonoBehaviour
     public void StopPlaying()
     {
         isPlaying = false;
+
+        // NEW - check and persist high score at the exact moment a run ends
+        if (score > highScore)
+        {
+            highScore = score;
+            PlayerPrefs.SetInt(HighScoreKey, highScore);
+            PlayerPrefs.Save();
+        }
     }
 
     public void ResetMultiplier()
@@ -134,4 +152,5 @@ public class ScoreSystem : MonoBehaviour
 
     public int GetScore() { return score; }
     public int GetMultiplier() { return multiplier; }
+    public int GetHighScore() { return highScore; } // NEW
 }
