@@ -1,6 +1,12 @@
 // BillSpawner.cs
 // Manages the queue of bills and spawns the next one for the player to sort
 // Fake bills appear randomly between every 20-30 bills
+//
+// FIXED: BeginSpawning() now resets ALL per-run state (obstacle timing, repeat-
+// bill tracking) every time a new run starts, not just once at scene load.
+// Previously these carried over silently between runs - a partially-progressed
+// obstacle counter from a quit/aborted run would push the next fake bill way
+// earlier than intended in the following run.
 
 using UnityEngine;
 using System.Collections;
@@ -28,9 +34,15 @@ public class BillSpawner : MonoBehaviour
     private BillData lastBillData = null;
     private int sameCount = 0;
 
-    void Start()
+    // NEW - wire this to GameStateManager's On Game Start () event.
+    public void BeginSpawning()
     {
+        // Reset per-run state fresh, every run - including the very first one.
         nextObstacleInterval = Random.Range(20, 31);
+        billsSinceLastObstacle = 0;
+        lastBillData = null;
+        sameCount = 0;
+
         SpawnNextBill();
     }
 
@@ -136,8 +148,6 @@ public class BillSpawner : MonoBehaviour
 
         if (currentBillData != null)
         {
-            // CHANGED: was (int)currentBillData.value (face value) - now uses the
-            // separate scorePoints field, matching SortingManager's manual-sort path.
             scoreSystem.OnCorrectSort(currentBillData.scorePoints);
             timerSystem.AddTime();
             SpawnNextBill();

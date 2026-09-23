@@ -1,8 +1,7 @@
 // UIManager.cs
 // Controls HUD elements - timer, score, multiplier - and the Game Over panel.
-// Main Menu is now handled separately by MainMenuManager; the old shared
-// startButton is gone, replaced by MainMenuPanel's PlayButton (first launch)
-// and GameOverPanel's own dedicated PlayAgainButton (instant retry).
+// NEW: shows/hides PauseButton at the right times - visible during actual
+// play, hidden on Game Over or a deliberate quit back to the Main Menu.
 
 using UnityEngine;
 using TMPro;
@@ -14,6 +13,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI multiplierText;
+    public GameObject pauseButton; // NEW
 
     [Header("Screens")]
     public GameObject gameOverPanel;
@@ -56,11 +56,19 @@ public class UIManager : MonoBehaviour
     public void OnGameStart()
     {
         gameOverPanel.SetActive(false);
+        if (pauseButton != null) pauseButton.SetActive(true); // NEW
     }
 
     public void OnGameOver()
     {
         gameOverPanel.SetActive(true);
         gameOverText.text = "GAME OVER\nScore: " + scoreSystem.GetScore();
+        if (pauseButton != null) pauseButton.SetActive(false); // NEW
+    }
+
+    // NEW - wire to GameStateManager's On Quit To Menu () event.
+    public void OnQuitToMenu()
+    {
+        if (pauseButton != null) pauseButton.SetActive(false);
     }
 }
