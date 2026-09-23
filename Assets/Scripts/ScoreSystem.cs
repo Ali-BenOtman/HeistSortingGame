@@ -1,7 +1,11 @@
 // ScoreSystem.cs
 // Tracks score and multiplier based on correct/wrong sorts
 // Advanced: wrong sort drops multiplier one level, speed bonus, multiplier decay
-// NEW: persists a high score via PlayerPrefs, checked/saved when a run ends
+// Persists a high score via PlayerPrefs, checked/saved when a run ends
+//
+// RENAMED totalSorts -> totalActions: now covers bills, obstacles, AND power-ups,
+// not just bill sorts specifically - anything the player interacts with counts
+// as time/progress through the run, which is what DifficultyManager reads.
 
 using UnityEngine;
 using UnityEngine.Events;
@@ -26,9 +30,10 @@ public class ScoreSystem : MonoBehaviour
     private float decayTimer = 0f;
     private bool isPlaying = false;
 
-    // NEW - persisted high score
     private const string HighScoreKey = "HighScore";
     private int highScore = 0;
+
+    private int totalActions = 0; // RENAMED from totalSorts
 
     public UnityEvent<int> onScoreChanged;
     public UnityEvent<int> onMultiplierChanged;
@@ -69,6 +74,8 @@ public class ScoreSystem : MonoBehaviour
 
     public void OnCorrectSort(int billValue)
     {
+        totalActions++;
+
         timeSinceLastSort = 0f;
         decayTimer = 0f;
         streak++;
@@ -94,12 +101,23 @@ public class ScoreSystem : MonoBehaviour
 
     public void OnWrongSort()
     {
+        totalActions++;
+
         streak = Mathf.Max(0, streak - streakPerLevel);
         multiplier = Mathf.Max(1, multiplier - 1);
         timeSinceLastSort = 0f;
         decayTimer = 0f;
         lastSortTime = 0f;
         onMultiplierChanged.Invoke(doubleMultiplierActive ? multiplier * 2 : multiplier);
+    }
+
+    /// NEW - counts an action toward the difficulty driver WITHOUT touching
+    /// score or multiplier. For outcomes that don't fit OnCorrectSort/OnWrongSort's
+    /// scoring logic - a correctly-tapped obstacle, a power-up interaction -
+    /// but should still represent time/actions spent in the run.
+    public void CountAction()
+    {
+        totalActions++;
     }
 
     public void ResetScore()
@@ -112,6 +130,7 @@ public class ScoreSystem : MonoBehaviour
         decayTimer = 0f;
         isPlaying = false;
         doubleMultiplierActive = false;
+        totalActions = 0;
         onMultiplierChanged.Invoke(multiplier);
         onScoreChanged.Invoke(score);
     }
@@ -127,7 +146,6 @@ public class ScoreSystem : MonoBehaviour
     {
         isPlaying = false;
 
-        // NEW - check and persist high score at the exact moment a run ends
         if (score > highScore)
         {
             highScore = score;
@@ -152,5 +170,6 @@ public class ScoreSystem : MonoBehaviour
 
     public int GetScore() { return score; }
     public int GetMultiplier() { return multiplier; }
-    public int GetHighScore() { return highScore; } // NEW
+    public int GetHighScore() { return highScore; }
+    public int GetTotalActions() { return totalActions; } // RENAMED from GetTotalSorts
 }

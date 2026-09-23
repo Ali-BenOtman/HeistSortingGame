@@ -1,21 +1,12 @@
 // DifficultyManager.cs
-// Controls how the game gets harder as SCORE increases (not time elapsed).
+// Controls how the game gets harder - the timer cap shrinks smoothly using
+// the same exponential formula as before.
 //
-// CHANGED from the original:
-// - Driven by score, not a real-time interval timer - fixes the bug where this
-//   script AND TimerSystem.AddTime() were both independently shrinking the same
-//   cap on two different clocks.
-// - Everything (timer cap, spawn delay, display level) is now a pure function of
-//   ONE normalized progress value derived from score - a single source of truth
-//   instead of several drifting variables.
-// - Pauses itself while TimerSystem is frozen, so the Time Freeze power-up can no
-//   longer be undercut by difficulty quietly climbing underneath it.
-// - Public API (StartDifficulty, StopDifficulty, GetCurrentSpawnDelay,
-//   GetDifficultyLevel) is unchanged, so any existing Inspector event wiring
-//   (e.g. GameStateManager.onGameStart) keeps working without edits.
+// Driven by TOTAL ACTIONS this run (bills, obstacles, power-ups - correct or
+// wrong, all of it) instead of score. Sort count can't be inflated by any
+// future points system, so difficulty stays tied to actual player activity.
 
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class DifficultyManager : MonoBehaviour
 {
@@ -24,35 +15,35 @@ public class DifficultyManager : MonoBehaviour
     public ScoreSystem scoreSystem;
 
     [Header("Timer Cap Curve")]
-    [Tooltip("Must match TimerSystem's initialMaxTime.")]
-    public float tMaxInitial = 30f;
+    [Tooltip("Must match TimerSystem's Initial Max Time.")]
+    public float tMaxInitial = 20f;
 
-    [FormerlySerializedAs("minTimerCap")]
     [Tooltip("Floor the cap approaches but never crosses.")]
-    public float tMin = 12f;
+    public float tMin = 5f;
 
-    [Tooltip("Smaller = cap shrinks sooner/harder. Tune against your average score pace - no direct equivalent existed in the old script, so this needs a fresh value.")]
-    public float scaleFactor = 4000f;
+    [Tooltip("Calibrated against total actions, not score. 313 reproduces the " +
+             "same curve timing as scaleFactor=8000 did against points.")]
+    public float scaleFactor = 313f;
 
     [Header("Spawn Delay Curve (legacy readout - not currently read by BillSpawner)")]
     public float maxSpawnDelay = 0.5f;
     public float minSpawnDelay = 0.1f;
 
     private bool isRunning = false;
-    private int lastScore = -1;
+    private int lastActionCount = -1;
     private float currentSpawnDelay;
     private const int DisplayLevelSteps = 10;
 
     void Update()
     {
         if (!isRunning || timerSystem == null || scoreSystem == null) return;
-        if (timerSystem.IsFrozen()) return; // difficulty pauses while Time Freeze is active
+        if (timerSystem.IsFrozen()) return;
 
-        int score = scoreSystem.GetScore();
-        if (score == lastScore) return;
-        lastScore = score;
+        int actionCount = scoreSystem.GetTotalActions();
+        if (actionCount == lastActionCount) return;
+        lastActionCount = actionCount;
 
-        float progress = 1f - Mathf.Exp(-score / scaleFactor); // 0 -> 1 as score climbs
+        float progress = 1f - Mathf.Exp(-actionCount / scaleFactor);
 
         timerSystem.SetMaxTime(tMin + (tMaxInitial - tMin) * (1f - progress));
         currentSpawnDelay = Mathf.Lerp(maxSpawnDelay, minSpawnDelay, progress);
@@ -61,7 +52,7 @@ public class DifficultyManager : MonoBehaviour
     public void StartDifficulty()
     {
         isRunning = true;
-        lastScore = -1;
+        lastActionCount = -1;
         currentSpawnDelay = maxSpawnDelay;
     }
 
@@ -78,7 +69,7 @@ public class DifficultyManager : MonoBehaviour
     public int GetDifficultyLevel()
     {
         if (scoreSystem == null) return 0;
-        float progress = 1f - Mathf.Exp(-scoreSystem.GetScore() / scaleFactor);
+        float progress = 1f - Mathf.Exp(-scoreSystem.GetTotalActions() / scaleFactor);
         return Mathf.FloorToInt(progress * DisplayLevelSteps);
     }
 }

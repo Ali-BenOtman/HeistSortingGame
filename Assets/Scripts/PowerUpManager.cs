@@ -1,5 +1,9 @@
 // PowerUpManager.cs
 // Handles spawning and activating power ups
+//
+// CHANGED: both OnPowerUpTapped() and OnPowerUpSwiped() now count toward the
+// difficulty driver via scoreSystem.CountAction() - a power-up interaction is
+// still a real action taken in the run, whether used correctly or skipped.
 
 using UnityEngine;
 using System.Collections;
@@ -99,9 +103,11 @@ public class PowerUpManager : MonoBehaviour
 
         Debug.Log("Power up activated: " + currentPowerUp.powerUpType);
 
-        // Add time bonus for all power ups except Time Freeze
         if (timerSystem != null && currentPowerUp.powerUpType != PowerUpType.TimeFreeze)
             timerSystem.AddTime();
+
+        if (scoreSystem != null)
+            scoreSystem.CountAction(); // NEW
 
         switch (currentPowerUp.powerUpType)
         {
@@ -122,6 +128,9 @@ public class PowerUpManager : MonoBehaviour
 
     public void OnPowerUpSwiped()
     {
+        if (scoreSystem != null)
+            scoreSystem.CountAction(); // NEW
+
         currentPowerUp = null;
     }
 
