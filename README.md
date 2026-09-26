@@ -11,7 +11,7 @@ You're sorting cash mid-heist. Bills of different denominations fly in one at a 
 - **Sorting** — each bill has a value and a correct swipe direction. Sort correctly to score and gain time; sort wrong and lose a chunk of time plus multiplier progress.
 - **Timer** — an elastic countdown: passive drain always ticking, a small time gain per correct sort, a larger penalty per wrong sort. The timer's *cap* shrinks as your score climbs, so a run tightens the longer you survive — correct play still feels safe, but the margin for error shrinks over time.
 - **Multiplier** — builds on sorting streaks, drops a level on mistakes, decays if you sit idle too long, and rewards fast consecutive sorts with a speed bonus.
-- **Obstacles** — fake bills mixed in roughly every 20–30 bills. Tap one correctly for a bonus; swipe it by mistake and your multiplier resets.
+- **Obstacles** — fake bills mixed in roughly every 20–30 bills. Tap one correctly for a bonus; swipe it by mistake and your multiplier resets, and more to come.
 - **Power-ups** — Time Freeze, Double Multiplier, and Auto Sort spawn periodically through a run.
 
 ## Tech Stack
