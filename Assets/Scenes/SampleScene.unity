@@ -4320,7 +4320,7 @@ MonoBehaviour:
   scoreSystem: {fileID: 1648239297}
   tMaxInitial: 20
   tMin: 5
-  scaleFactor: 4000
+  scaleFactor: 313
   maxSpawnDelay: 0.5
   minSpawnDelay: 0.1
 --- !u!114 &1648239300

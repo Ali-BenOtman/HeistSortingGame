@@ -1,7 +1,11 @@
 // UIManager.cs
 // Controls HUD elements - timer, score, multiplier - and the Game Over panel.
-// NEW: shows/hides PauseButton at the right times - visible during actual
-// play, hidden on Game Over or a deliberate quit back to the Main Menu.
+//
+// CHANGED: OnGameOver() now shows the high score alongside the run's score,
+// with a "NEW HIGH SCORE!" callout when earned. This relies on
+// ScoreSystem.StopPlaying() having already run and updated the high score
+// BEFORE this fires - GameStateManager's On Game Over () event list must
+// have ScoreSystem.StopPlaying listed ABOVE UIManager.OnGameOver.
 
 using UnityEngine;
 using TMPro;
@@ -13,7 +17,7 @@ public class UIManager : MonoBehaviour
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI multiplierText;
-    public GameObject pauseButton; // NEW
+    public GameObject pauseButton;
 
     [Header("Screens")]
     public GameObject gameOverPanel;
@@ -56,17 +60,26 @@ public class UIManager : MonoBehaviour
     public void OnGameStart()
     {
         gameOverPanel.SetActive(false);
-        if (pauseButton != null) pauseButton.SetActive(true); // NEW
+        if (pauseButton != null) pauseButton.SetActive(true);
     }
 
     public void OnGameOver()
     {
         gameOverPanel.SetActive(true);
-        gameOverText.text = "GAME OVER\nScore: " + scoreSystem.GetScore();
-        if (pauseButton != null) pauseButton.SetActive(false); // NEW
+
+        int finalScore = scoreSystem.GetScore();
+        int highScore = scoreSystem.GetHighScore();
+
+        // Requires ScoreSystem.StopPlaying() to have already run - see note above.
+        string highScoreLine = (finalScore >= highScore)
+            ? "NEW HIGH SCORE!"
+            : "High Score: " + highScore;
+
+        gameOverText.text = "GAME OVER\nScore: " + finalScore + "\n" + highScoreLine;
+
+        if (pauseButton != null) pauseButton.SetActive(false);
     }
 
-    // NEW - wire to GameStateManager's On Quit To Menu () event.
     public void OnQuitToMenu()
     {
         if (pauseButton != null) pauseButton.SetActive(false);
