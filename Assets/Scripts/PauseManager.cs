@@ -1,7 +1,13 @@
 // PauseManager.cs
 // Owns the actual pause mechanism (Time.timeScale + input blocking) for the
-// whole game now. SettingsManager no longer touches any of this - it can be
-// opened from here without conflicting over who controls the pause state.
+// whole game. SettingsManager doesn't touch any of this - it can be opened
+// from here without conflicting over who controls the pause state.
+//
+// NEW: OnApplicationPause() automatically triggers a real pause whenever the
+// app loses focus mid-run (call, notification, home button, screen lock) -
+// without this, the timer would just keep draining in the background while
+// the player isn't even looking at the screen. Deliberately does NOT auto-
+// resume when focus returns - the player has to tap Resume themselves.
 
 using UnityEngine;
 
@@ -44,5 +50,17 @@ public class PauseManager : MonoBehaviour
 
         if (gameStateManager != null)
             gameStateManager.QuitToMenu();
+    }
+
+    // NEW - Unity calls this automatically on mobile whenever the app loses
+    // or regains focus. pauseStatus is true when losing focus.
+    void OnApplicationPause(bool pauseStatus)
+    {
+        if (pauseStatus && gameStateManager != null && gameStateManager.IsPlaying())
+        {
+            OpenPause();
+        }
+        // Deliberately no action when pauseStatus is false (regaining focus) -
+        // the player resumes manually via ResumeButton, never automatically.
     }
 }
