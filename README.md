@@ -1,44 +1,54 @@
 # Heist Sorting Game
 
-A solo-built Unity 2D endless arcade game — sort stolen bills into the correct bags before the clock catches up with you.
+A solo-built Unity 2D endless arcade game — sort stolen bills into the correct bags before the clock catches up with you. **In active development.**
 
 ## Concept
 
-You're sorting cash mid-heist. Bills of different denominations fly in one at a time, each needing a specific swipe direction to land in its matching bag. No levels, no end — it's an endless survival format, chasing your own high score under constant timer pressure. Set in a vault environment, with a cartoony, vibrant art direction inspired by *Royal Kingdom*.
+You're sorting cash mid-heist. Bills fly in one at a time, each needing a specific swipe direction to land in its matching bag. No levels — endless survival, chasing your own high score under constant timer pressure. Set in a vault environment, cartoony/vibrant art direction inspired by *Royal Kingdom*.
 
 ## Core Mechanics
 
-- **Sorting** — each bill has a value and a correct swipe direction. Sort correctly to score and gain time; sort wrong and lose a chunk of time plus multiplier progress.
-- **Timer** — an elastic countdown: passive drain always ticking, a small time gain per correct sort, a larger penalty per wrong sort. The timer's *cap* shrinks as your score climbs, so a run tightens the longer you survive — correct play still feels safe, but the margin for error shrinks over time.
-- **Multiplier** — builds on sorting streaks, drops a level on mistakes, decays if you sit idle too long, and rewards fast consecutive sorts with a speed bonus.
-- **Obstacles** — fake bills mixed in roughly every 20–30 bills. Tap one correctly for a bonus; swipe it by mistake and your multiplier resets, and more to come.
-- **Power-ups** — Time Freeze, Double Multiplier, and Auto Sort spawn periodically through a run.
+- **Sorting** — each bill has a value (displayed) and a separate, decoupled score value, so score reflects skill rather than which bill happened to spawn.
+- **Elastic timer** — a fixed passive drain, a fixed gain on a correct sort, a larger fixed penalty on a wrong sort. Only the timer's *cap* shrinks as difficulty rises — never the drain rate or the reward/penalty amounts — so a mistake costs a growing share of your buffer without any single variable spiraling out of tuning range.
+- **Difficulty driver** — shrinks the cap based on total in-run actions (bills, obstacles, power-ups — correct or wrong), not score. This was a deliberate redesign: an earlier score-driven version would have let any future points multiplier accidentally accelerate difficulty. Calibrated against real playtest data, not guessed numbers.
+- **Multiplier** — builds on sorting streaks, drops on mistakes, decays if idle, rewards fast consecutive sorts.
+- **Obstacles & power-ups** — fake bills mixed in periodically; three power-ups (Time Freeze, Double Multiplier, Auto Sort) spawn through a run.
+- **Persistent high score** — saved locally, survives app restarts.
+
+## Technical Highlights
+
+A few things worth calling out for anyone reading this as more than a feature list:
+
+- **Iterative difficulty-system design.** Went through two full architectural revisions — time-based → score-based → action-count-based — each driven by a concrete flaw found through actual playtesting or a spotted exploit vector, not aesthetic preference. Final tuning was verified against real telemetry (playtest pace data), not assumed.
+- **Centralized pause-state ownership.** Settings and Pause both needed to freeze the game, from multiple entry points. An early version let each system independently touch `Time.timeScale`, causing state conflicts when one closed while the other was still open. Refactored to a single owner (`PauseManager`) — a direct application of the Single Responsibility Principle to a real bug, not just a textbook example.
+- **Event-driven architecture throughout.** Game state transitions (`Start`, `Game Over`, `Quit to Menu`) broadcast via UnityEvents; independent systems (scoring, difficulty, UI, power-ups) subscribe and react without direct coupling to each other.
+- **Root-cause debugging on several real issues**, including a UI raycast-ordering bug (Settings panel losing click priority depending on which menu opened it, fixed via explicit sibling-order control) and a per-run state leak (obstacle-spawn timing silently carrying over between runs instead of resetting).
 
 ## Tech Stack
 
-- Unity 6 (2D)
-- C#
+- Unity 6 (2D), C#
 - Unity's New Input System (touch on device, mouse in-editor)
 - ScriptableObjects for bill / obstacle / power-up data
+- Git/GitHub for version control
 - Target platforms: iOS & Android, portrait (1080×1920)
 
 ## Status
 
-Actively in development, core-loop-first.
+Core loop, menus, and persistence are built and tested. Not yet released.
 
-- ✅ Phase 1 — Core loop (spawning, swipe sorting, scoring, timer, UI)
-- ✅ Phase 2 — Advanced mechanics (multiplier system, difficulty scaling, fake-bill obstacles)
-- 🔧 Phase 3 — Polish & power-ups (three power-ups built; narrative polish and audio still pending)
-- 🔧 Currently reworking difficulty scaling to be driven by score rather than elapsed time
-- ⏳ Phase 4 — Retention & monetization systems (planned)
-- ⏳ Art & animation — not yet started; current build uses placeholder assets, held off intentionally until the core loop is fully tuned and feels right
+- ✅ Core sorting loop, scoring, timer, multiplier
+- ✅ Difficulty scaling (action-count driven, tuned against real playtest data)
+- ✅ Full menu system — Main Menu, Pause, Settings, enhanced Game Over screen with persisted high score
+- ✅ Obstacles, power-ups, mobile lifecycle handling (auto-pause on app backgrounding), Android back button
+- 🔧 Audio — plumbing built, placeholder/free clips being sourced
+- ⏳ Custom art pass — deliberately held back until core loop was validated; that gate has now been cleared
+- ⏳ Store submission — accounts, device builds, review
 
 ## Running the Project
 
 1. Clone the repo
-2. Open it in Unity Hub (Unity 6.x)
-3. Open the main scene
-4. Press Play
+2. Open in Unity Hub (Unity 6.x)
+3. Open the main scene, press Play
 
 ## Project Structure
 
@@ -50,6 +60,9 @@ Assets/
     SwipeDetector.cs, TapDetector.cs                — input handling
     BillSpawner.cs, SortingManager.cs               — core spawn/sort loop
     ObstacleManager.cs, PowerUpManager.cs           — fake bills & power-up logic
-    ScoreSystem.cs, TimerSystem.cs, DifficultyManager.cs  — scoring, timer, difficulty curve
-    FeedbackManager.cs, GameStateManager.cs, UIManager.cs — feedback, state, HUD
+    ScoreSystem.cs, TimerSystem.cs, DifficultyManager.cs  — scoring, elastic timer, difficulty curve
+    GameStateManager.cs                             — state machine (Idle / Playing / GameOver), event dispatch
+    UIManager.cs, MainMenuManager.cs, PauseManager.cs, SettingsManager.cs — UI & pause-state ownership
+    AudioManager.cs, BackButtonHandler.cs           — audio plumbing, Android back-button routing
+    FeedbackManager.cs                              — correct/wrong visual feedback
 ```
