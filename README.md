@@ -21,7 +21,7 @@ A few things worth calling out for anyone reading this as more than a feature li
 
 - **Iterative difficulty-system design.** Went through two full architectural revisions — time-based → score-based → action-count-based — each driven by a concrete flaw found through actual playtesting or a spotted exploit vector, not aesthetic preference. Final tuning was verified against real telemetry (playtest pace data), not assumed.
 - **Centralized pause-state ownership.** Settings and Pause both needed to freeze the game, from multiple entry points. An early version let each system independently touch `Time.timeScale`, causing state conflicts when one closed while the other was still open. Refactored to a single owner (`PauseManager`) — a direct application of the Single Responsibility Principle to a real bug, not just a textbook example.
-- **Event-driven architecture throughout.** Game state transitions (`Start`, `Game Over`, `Quit to Menu`) broadcast via UnityEvents; independent systems (scoring, difficulty, UI, power-ups) subscribe and react without direct coupling to each other.
+- **Event-driven architecture throughout.** Game state transitions (`Start`, `Game Over`, `Quit to Menu`) broadcast via UnityEvents; independent systems (scoring, difficulty, UI, power-ups) subscribe and react to those transitions instead of being called one by one.
 - **Root-cause debugging on several real issues**, including a UI raycast-ordering bug (Settings panel losing click priority depending on which menu opened it, fixed via explicit sibling-order control) and a per-run state leak (obstacle-spawn timing silently carrying over between runs instead of resetting).
 
 ## Tech Stack
