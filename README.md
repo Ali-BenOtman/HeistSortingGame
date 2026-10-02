@@ -12,7 +12,7 @@ You're sorting cash mid-heist. Bills fly in one at a time, each needing a specif
 - **Elastic timer** — a fixed passive drain, a fixed gain on a correct sort, a larger fixed penalty on a wrong sort. Only the timer's *cap* shrinks as difficulty rises — never the drain rate or the reward/penalty amounts — so a mistake costs a growing share of your buffer without any single variable spiraling out of tuning range.
 - **Difficulty driver** — shrinks the cap based on total in-run actions (bills, obstacles, power-ups — correct or wrong), not score. This was a deliberate redesign: an earlier score-driven version would have let any future points multiplier accidentally accelerate difficulty. Calibrated against real playtest data, not guessed numbers.
 - **Multiplier** — builds on sorting streaks, drops on mistakes, decays if idle, rewards fast consecutive sorts.
-- **Obstacles & power-ups** — fake bills mixed in periodically; three power-ups (Time Freeze, Double Multiplier, Auto Sort) spawn through a run.
+- **Obstacles & power-ups** — fake bills mixed in periodically; three power-ups (Time Freeze, Double Multiplier, Auto Sort) spawn through a run, and more to come.
 - **Persistent high score** — saved locally, survives app restarts.
 
 ## Technical Highlights
