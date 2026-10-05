@@ -4,7 +4,7 @@ A solo-built Unity 2D endless arcade game — sort stolen bills into the correct
 
 ## Concept
 
-You're sorting cash mid-heist. Bills fly in one at a time, each needing a specific swipe direction to land in its matching bag. No levels — endless survival, chasing your own high score under constant timer pressure. Set in a vault environment, cartoony/vibrant art direction inspired by *Royal Kingdom*.
+You're sorting cash mid-heist. Bills fly in one at a time, each needing a specific swipe direction to land in its matching bag. No levels — endless survival, chasing your own high score under constant timer pressure. Set in a vault environment, cartoony/vibrant art direction inspired by *Royal Kingdom* and *Friday Night Funkin'*.
 
 ## Core Mechanics
 
