@@ -1,6 +1,6 @@
 # Heist Sorting Game
 
-A solo-built Unity 2D endless arcade game — sort stolen bills into the correct bags before the clock catches up with you. **In active development.**
+A solo-built Unity 2D endless arcade game — sort bills into the correct bags before the clock catches up with you. **In active development.**
 
 ## Concept
 
